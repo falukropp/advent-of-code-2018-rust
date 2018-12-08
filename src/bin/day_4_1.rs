@@ -51,7 +51,7 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     let (sleepiest_guard, _) = minutes_by_guard
         .iter()
         .map(|(k, v)| (k, v.iter().sum::<u32>()))
-        .max_by_key(|(_k, v)| v.clone()) // ????????????????????????????????????
+        .max_by_key(|(_k, v)| *v)
         .unwrap();
 
     println!("Sleepiest guard {}", sleepiest_guard);
@@ -60,18 +60,18 @@ fn process_file(path: &str) -> Result<u32, GenError> {
 
     println!("{:?}", sleepiest_guard_minutes);
 
-    let (max_minutes, minutes) = minutes_by_guard
+    let (max_minutes, _minutes) = minutes_by_guard
         .get(sleepiest_guard)
         .unwrap()
         .iter()
         .enumerate()
-        .max_by_key(|&(_, item)| item.clone())
+        .max_by_key(|&(_, item)| *item)
         .unwrap();
 
     return Ok(sleepiest_guard * (max_minutes as u32));
 }
 
 fn main() {
-    let sum = process_file("src/res/day_4.txt").unwrap();
+    let sum = process_file("src/res/day_4.txt").unwrap(); // 14346
     println!("Checksum {}", sum);
 }
