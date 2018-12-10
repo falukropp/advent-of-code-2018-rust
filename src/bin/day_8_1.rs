@@ -31,7 +31,7 @@ fn sum_of_metadata(nums: &[u32]) -> (u32, usize) {
         pos += size_of_child;
     }
 
-    let end = (pos + meta_datas);
+    let end = pos + meta_datas;
     sum += nums[pos..end].iter().sum::<u32>();
 
     // println!("sum {} size  {} ", sum, end);
