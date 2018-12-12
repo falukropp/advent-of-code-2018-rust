@@ -97,6 +97,6 @@ fn process_file(path: &str) -> Result<u32, GenError> {
 fn main() {
     // let sum = process_file("src/res/day_10_ex.txt").unwrap(); // "HI", 3 seconds
 
-    let sum = process_file("src/res/day_10.txt").unwrap(); // EJXNCCNX
+    let sum = process_file("src/res/day_10.txt").unwrap(); // "EJXNCCNX", 10612 seconds
     println!("Seconds {}", sum);
 }
