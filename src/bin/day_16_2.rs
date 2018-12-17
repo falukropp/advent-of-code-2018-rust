@@ -1,7 +1,5 @@
 extern crate regex;
 
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -15,9 +13,10 @@ use Opcode::*;
 
 type GenError = Box<std::error::Error>;
 
+// Original
 // 14: {12, 11},
 // 6: {4, 7, 12, 11, 8, 2, 9, 1, 5, 3, 10, 0, 6},
-// 7: {14, 12},
+// 7: {12},
 // 11: {2, 4, 6, 5, 15, 13, 9, 8}, 13: {13, 15},
 // 5: {5, 4, 11, 13, 15, 10, 14, 12},
 // 9: {9, 1},
@@ -31,27 +30,43 @@ type GenError = Box<std::error::Error>;
 //  4: {15, 9, 12, 14, 10, 11, 13, 5, 4},
 //  12: {0, 1, 9}
 
+// After elimination
+// 14: {11},
+// 6: {3},
+// 7: {12},
+// 11: {6},
+// 13: {15},
+// 5: {5},
+// 9: {1},
+// 10: {10},
+// 15: {13},
+//  2: {7, 6},
+//  0: {14},
+//  1: {4},
+//  3: {2},
+//  8: {8},
+//  4: {9},
+//  12: {0}
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 enum Opcode {
-    Addr,
-    Addi,
-    Mulr,
-    Muli,
-    Banr,
-    Bani,
-    Borr,
-    Bori,
-    Setr,
-    Seti,
-    Gtir,
-    Gtri,
-    Gtrr, // 7
-    Eqir,
     Eqri, // 0
-    Eqrr,
+    Banr, // 1
+    Bori, // 2
+    Mulr, // 3
+    Seti, // 4
+    Bani, // 5
+    Muli, // 6
+    Gtrr, // 7
+    Setr, // 8
+    Addi, // 9
+    Gtir, // 10
+    Borr, // 11
+    Addr, // 12
+    Eqrr, // 13
+    Gtri, // 14
+    Eqir, // 15
 }
-
-// let y: MyEnum = unsafe { transmute(x as i8) };
 
 impl From<u32> for Opcode {
     fn from(x: u32) -> Self {
@@ -124,10 +139,10 @@ fn get_vector(s: &str) -> Vec<u32> {
         .collect()
 }
 
-fn get_unknown_instruction(s: &str) -> Instruction {
+fn get_instruction(s: &str) -> Instruction {
     let raw_instruction_data: Vec<u32> = s.split(" ").map(|i| i.trim().parse().unwrap()).collect();
     Instruction {
-        op_code: Addr,
+        op_code: Opcode::from(raw_instruction_data[0]),
         a: raw_instruction_data[1],
         b: raw_instruction_data[2],
         c: raw_instruction_data[3],
@@ -147,15 +162,10 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     };
     let mut after: Vec<u32> = Vec::new();
     let mut empty_lines_in_row = 0;
-    let mut raw_op_code_in_instruction = 0;
 
     let mut part_1 = true;
 
-    // Maps from raw_op_code_in_instruction to Opcode.ordinals
-    let mut possible_results: HashMap<u32, HashSet<u32>> = HashMap::new();
-    for raw_op_code in 0..=15 {
-        possible_results.insert(raw_op_code, (0..=15).collect());
-    }
+    let mut registers_part2 = vec![0; 4];
 
     for line_result in r.lines() {
         let line = line_result?;
@@ -175,64 +185,28 @@ fn process_file(path: &str) -> Result<u32, GenError> {
         } else if line.starts_with("After: ") {
             after = get_vector(&line);
             // println!("Got after {:?}", after);
-            let mut matches = HashSet::new();
-            for raw_op_code in 0..=15 {
-                instruction.op_code = Opcode::from(raw_op_code);
-
-                let mut copy_of_before = before.clone();
-                instruction.execute(&mut copy_of_before);
-                if copy_of_before == after {
-                    // println!("Match for {:?}", instruction.op_code);
-                    matches.insert(raw_op_code);
-                }
+            let mut copy_of_before = before.clone();
+            instruction.execute(&mut copy_of_before);
+            if copy_of_before != after {
+                println!("-------------------------------------------------");
+                println!("Oh noes! No match for ");
+                println!("Before {:?} ", before);
+                println!("Instruction {:?}", instruction);
+                println!("After {:?}", after);
+            } else {
+                // println!("Yay!");
             }
-
-            let prev = possible_results
-                .get(&raw_op_code_in_instruction)
-                .unwrap()
-                .clone();
-            possible_results.insert(
-                raw_op_code_in_instruction,
-                prev.intersection(&matches).cloned().collect(),
-            );
         } else if part_1 {
-            // println!("Instruction line {}", line);
-            raw_op_code_in_instruction = line.split(" ").next().unwrap().trim().parse().unwrap();
-            instruction = get_unknown_instruction(&line);
+            instruction = get_instruction(&line);
         // println!("Got instruction {:?}", instruction);
         } else {
-
+            get_instruction(&line).execute(&mut registers_part2);
         }
     }
 
-    println!("possible_results {:?}", possible_results);
-
-    let mut changes = true;
-    let mut already_solved = HashSet::new();
-    while changes {
-        changes = false;
-        let mut to_be_removed = HashSet::new();
-        for (raw_op_code, set) in &possible_results {
-            if set.len() == 1 && !already_solved.contains(&raw_op_code) {
-                println!(
-                    "{} {:?} ",
-                    raw_op_code,
-                    Opcode::from(*set.iter().next().unwrap())
-                );
-                already_solved.insert(raw_op_code);
-                to_be_removed.insert(raw_op_code);
-                changes = true;
-            }
-        }
-
-        for set in possible_results.values_mut() {
-            set.retain(|s| !to_be_removed.contains(s));
-        }
-    }
-
-    Ok(0)
+    Ok(registers_part2[0])
 }
 
 fn main() {
-    println!("reg[0] {}", process_file("src/res/day_16.txt").unwrap()); // (547,
+    println!("reg[0] {}", process_file("src/res/day_16.txt").unwrap()); // 582
 }

@@ -4,8 +4,6 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::vec::Vec;
 
-// This program is broken, it does the same error as https://www.reddit.com/r/adventofcode/comments/a6hldy/day_15_part_1_passing_all_tests_but_not_actual/ebvh8i6/?context=3
-
 type GenError = Box<std::error::Error>;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
@@ -107,53 +105,8 @@ fn process_file(path: &str) -> Result<i32, GenError> {
                 // If next to any enemy, don't move.
                 let least_enemy_attack_coords = find_enemy_within_range(&enemies, being.x, being.y);
                 if least_enemy_attack_coords == None {
-                    let mut least_enemy_distance = std::u32::MAX;
-
-                    let enemies_coords = enemies
-                        .iter()
-                        .filter(|e| e.hit_points > 0)
-                        .map(|b| (b.x, b.y))
-                        .collect();
-                    let enemies_distance_map = create_distance_map(&cave, &enemies_coords);
-
-                    // for row in &enemies_distance_map {
-                    //     for col in row {
-                    //         if *col == std::u32::MAX {
-                    //             print!("  -");
-                    //         } else {
-                    //             print!("{:3}", col);
-                    //         }
-                    //     }
-                    //     println!("");
-                    // }
-
-                    if being.y > 0 {
-                        let enemies_distance_map_up = enemies_distance_map[being.y - 1][being.x];
-                        if enemies_distance_map_up < least_enemy_distance {
-                            least_enemy_distance = enemies_distance_map_up;
-                            least_enemy_move_coords = Some((being.x, being.y - 1));
-                        }
-                    }
-                    if being.x > 0 {
-                        let enemies_distance_map_left = enemies_distance_map[being.y][being.x - 1];
-                        if enemies_distance_map_left < least_enemy_distance {
-                            least_enemy_distance = enemies_distance_map_left;
-                            least_enemy_move_coords = Some((being.x - 1, being.y));
-                        }
-                    }
-                    if being.x < cave_width - 1 {
-                        let enemies_distance_map_right = enemies_distance_map[being.y][being.x + 1];
-                        if enemies_distance_map_right < least_enemy_distance {
-                            least_enemy_distance = enemies_distance_map_right;
-                            least_enemy_move_coords = Some((being.x + 1, being.y));
-                        }
-                    }
-                    if being.y < cave_height - 1 {
-                        let enemies_distance_map_down = enemies_distance_map[being.y + 1][being.x];
-                        if enemies_distance_map_down < least_enemy_distance {
-                            least_enemy_move_coords = Some((being.x, being.y + 1));
-                        }
-                    }
+                    least_enemy_move_coords =
+                        find_first_step_in_path_to_target(&enemies, being.x, being.y);
                 }
             }
 
@@ -259,55 +212,57 @@ fn find_enemy_within_range(enemies: &Vec<Being>, x: usize, y: usize) -> Option<(
     return least_enemy_attack_coords;
 }
 
-fn create_distance_map(cave: &Vec<Vec<char>>, start_coords: &Vec<(usize, usize)>) -> Vec<Vec<u32>> {
-    let mut coords: VecDeque<(usize, usize)> = start_coords.iter().map(|v| v.clone()).collect();
-    let cave_width = cave[0].len();
-    let cave_height = cave.len();
-    let mut result = vec![vec![std::u32::MAX; cave_width]; cave_height];
+fn find_first_step_in_path_to_target() -> Option<(usize, usize)> {}
 
-    while let Some(coord) = coords.pop_front() {
-        let prev_val = result[coord.1][coord.0];
-        let val = if prev_val == std::u32::MAX {
-            0
-        } else {
-            prev_val + 1
-        };
+// fn create_distance_map(cave: &Vec<Vec<char>>, start_coords: &Vec<(usize, usize)>) -> Vec<Vec<u32>> {
+//     let mut coords: VecDeque<(usize, usize)> = start_coords.iter().map(|v| v.clone()).collect();
+//     let cave_width = cave[0].len();
+//     let cave_height = cave.len();
+//     let mut result = vec![vec![std::u32::MAX; cave_width]; cave_height];
 
-        // Up
-        if coord.1 > 0
-            && cave[coord.1 - 1][coord.0] == '.'
-            && result[coord.1 - 1][coord.0] == std::u32::MAX
-        {
-            result[coord.1 - 1][coord.0] = val;
-            coords.push_back((coord.0, coord.1 - 1));
-        }
-        // Left
-        if coord.0 > 0
-            && cave[coord.1][coord.0 - 1] == '.'
-            && result[coord.1][coord.0 - 1] == std::u32::MAX
-        {
-            result[coord.1][coord.0 - 1] = val;
-            coords.push_back((coord.0 - 1, coord.1));
-        } // Right
-        if coord.0 < cave_width - 1
-            && cave[coord.1][coord.0 + 1] == '.'
-            && result[coord.1][coord.0 + 1] == std::u32::MAX
-        {
-            result[coord.1][coord.0 + 1] = val;
-            coords.push_back((coord.0 + 1, coord.1));
-        }
-        // Down
-        if coord.1 < cave_height - 1
-            && cave[coord.1 + 1][coord.0] == '.'
-            && result[coord.1 + 1][coord.0] == std::u32::MAX
-        {
-            result[coord.1 + 1][coord.0] = val;
-            coords.push_back((coord.0, coord.1 + 1));
-        }
-    }
+//     while let Some(coord) = coords.pop_front() {
+//         let prev_val = result[coord.1][coord.0];
+//         let val = if prev_val == std::u32::MAX {
+//             0
+//         } else {
+//             prev_val + 1
+//         };
 
-    return result;
-}
+//         // Up
+//         if coord.1 > 0
+//             && cave[coord.1 - 1][coord.0] == '.'
+//             && result[coord.1 - 1][coord.0] == std::u32::MAX
+//         {
+//             result[coord.1 - 1][coord.0] = val;
+//             coords.push_back((coord.0, coord.1 - 1));
+//         }
+//         // Left
+//         if coord.0 > 0
+//             && cave[coord.1][coord.0 - 1] == '.'
+//             && result[coord.1][coord.0 - 1] == std::u32::MAX
+//         {
+//             result[coord.1][coord.0 - 1] = val;
+//             coords.push_back((coord.0 - 1, coord.1));
+//         } // Right
+//         if coord.0 < cave_width - 1
+//             && cave[coord.1][coord.0 + 1] == '.'
+//             && result[coord.1][coord.0 + 1] == std::u32::MAX
+//         {
+//             result[coord.1][coord.0 + 1] = val;
+//             coords.push_back((coord.0 + 1, coord.1));
+//         }
+//         // Down
+//         if coord.1 < cave_height - 1
+//             && cave[coord.1 + 1][coord.0] == '.'
+//             && result[coord.1 + 1][coord.0] == std::u32::MAX
+//         {
+//             result[coord.1 + 1][coord.0] = val;
+//             coords.push_back((coord.0, coord.1 + 1));
+//         }
+//     }
+
+//     return result;
+// }
 
 fn main() {
     // assert_eq!(27828, process_file("src/res/day_15_ex_1.txt").unwrap());
