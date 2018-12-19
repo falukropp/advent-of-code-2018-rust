@@ -1,0 +1,81 @@
+0    - addi 4 16 4      -- set ip to 16 (jump to 17)
+
+1    - seti 1 8 1       -- reg1 = 1
+do {
+2    - seti 1 3 5       -- reg5 = 1
+
+do {
+
+-- reg3 =  reg1 * reg5
+
+3    - mulr 1 5 3       -- reg3 = reg1 * reg5
+
+-- Add 1 to reg0 if reg3 == reg2
+
+4    - eqrr 3 2 3       -- reg3 = reg3 == reg2
+5    - addr 3 4 4       -- jump to 6 + reg3
+6    - addi 4 1 4       -- jump to 8
+7    - addr 1 0 0       -- reg0 += reg1
+
+-- reg5++
+
+8    - addi 5 1 5       -- reg5 += 1
+
+-- } while (reg5 <= reg2)
+
+9    - gtrr 5 2 3       -- reg3 = reg5 > reg2
+10   - addr 4 3 4       -- jump to 11 + reg3
+11   - seti 2 2 4       -- jump to 3
+
+-- reg1++
+
+12   - addi 1 1 1       -- reg1 += 1
+
+} while (reg1 <= reg2);
+
+13   - gtrr 1 2 3       -- reg3 = reg1 > reg2
+14   - addr 3 4 4       -- jump to 15 + reg3
+15   - seti 1 4 4       -- jump to 2
+
+16   - mulr 4 4 4      -- jump to 257 (Quit)
+
+17   - addi 2 2 2      -- reg2 += 2
+18   - mulr 2 2 2      -- reg2 = reg2*reg2   -- 4
+19   - mulr 4 2 2      -- reg2 *= 19         -- 76
+20   - muli 2 11 2     -- reg2 *= 11         -- 836
+21   - addi 3 6 3      -- reg3 += 6          -- 6
+22   - mulr 3 4 3      -- reg3 *= 22         -- 132
+23   - addi 3 8 3      -- reg3 += 8          -- 140
+24   - addr 2 3 2      -- reg2 += reg3       -- 976
+
+-- This is the initial switch on reg0
+
+25   - addr 4 0 4      -- ip += reg0
+26   - seti 0 1 4      -- ip = 0 (jump to 1)
+
+27   - setr 4 4 3      -- reg3 = 27         -- 27
+28   - mulr 3 4 3      -- reg3 *= 28        -- 756
+29   - addr 4 3 3      -- reg3 += 29        -- 785
+30   - mulr 4 3 3      -- reg3 *= 30        -- 23550
+31   - muli 3 14 3     -- reg3 *= 14        -- 329700
+32   - mulr 3 4 3      -- reg3 *= 32        -- 10 550 400
+33   - addr 2 3 2      -- reg2 += reg3      -- 10 551 376
+34   - seti 0 4 0      -- reg0 = 0
+35   - seti 0 7 4      -- jmp 1
+
+------------------------------------
+
+// The sum of all factors of reg2. (either 976 or 10551376)
+
+reg1 = 1
+do {
+    reg5 = 1
+    do {
+        if (reg1 * reg5 == reg2) {
+            reg0 += reg1
+        }
+        ++reg5;
+    } while (reg5 <= reg2)
+
+    ++reg1;
+} while (reg1 <= reg2)

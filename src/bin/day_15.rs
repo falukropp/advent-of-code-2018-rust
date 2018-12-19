@@ -212,7 +212,81 @@ fn find_enemy_within_range(enemies: &Vec<Being>, x: usize, y: usize) -> Option<(
     return least_enemy_attack_coords;
 }
 
-fn find_first_step_in_path_to_target() -> Option<(usize, usize)> {}
+struct SearchNode {
+    y : usize,
+    x : usize,
+    first_y : usize,
+    first_x : usize,
+    distance : u32,
+};
+
+fn find_first_step_in_path_to_target(cave: &Vec<Vec<char>>, enemies: &Vec<Being>, start_x : usize, start_y : usize) -> Option<(usize, usize)> {
+    let mut search_nodes : VecDeque<SearchNode> = VecDeque::new();
+    let mut already_visited : HashSet<(usize, usize))> = HashSet::new();
+    let mut all_closest_targets : Vec<SearchNode> = Vec::new();
+
+    search_nodes.push_back(SearchNode {
+        x : start_x,
+        y : start_y,
+        prev_x : 0, // Mark this as the root-node
+        prev_y : 0, // Mark this as the root-node
+        distance : 0
+    });
+    already_visited.insert((start_x, start_y));
+
+    let mut matched_distance = std::u32::MAX;
+
+    while let Some(current_node) = search_node.pop_front() {
+        if next_node.distance > matched_distance {
+            break;
+        }
+
+        if find_enemy_within_range(enemies, current_node.x, current_node.y) {
+            matched_distance = current_node.distance;
+            all_closest_targets.insert(current_node);
+        } else {
+            // Add new nodes
+
+            // Up
+            if cave[current_node.y+1][current_node.x] == '.' && !already_visited.contains((current_node.x, current_node.y+1)) {
+                search_nodes.push_back(SearchNode {
+                    x : current_node.x,
+                    y : current_node.y+1,
+                    prev_x : if current_node.prev_x == 0 { current_node.x } else { current_node.prev_x },
+                    prev_y : if current_node.prev_y == 0 { current_node.y+1 } else { current_node.prev_y }, // Mark this as the root-node
+                    distance : current_node.distance + 1,
+                });
+            }
+
+            // Left
+            // Right
+            // Down
+        }
+
+    }
+
+    if all_closest_targets.is_empty() {
+        return None;
+    }
+
+    all_closest_targets.sort();
+    let selected target = all_closest_targets[0];
+    // Return the starting node for the selected target
+    Some(target.first_x, first_y)
+}
+
+fn generate_search_node() {
+            if cave[current_node.y+1][current_node.x] == '.' && !already_visited.contains((current_node.x, current_node.y+1)) {
+                search_nodes.push_back(SearchNode {
+                    x : current_node.x,
+                    y : current_node.y+1,
+                    prev_x : if current_node.prev_x == 0 { current_node.x } else { current_node.prev_x },
+                    prev_y : if current_node.prev_y == 0 { current_node.y+1 } else { current_node.prev_y }, // Mark this as the root-node
+                    distance : current_node.distance + 1,
+                });
+            }
+
+}
 
 // fn create_distance_map(cave: &Vec<Vec<char>>, start_coords: &Vec<(usize, usize)>) -> Vec<Vec<u32>> {
 //     let mut coords: VecDeque<(usize, usize)> = start_coords.iter().map(|v| v.clone()).collect();
