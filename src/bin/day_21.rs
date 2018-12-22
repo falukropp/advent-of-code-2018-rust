@@ -135,7 +135,7 @@ fn process_file(path: &str, reg0_initialvalue: u64) -> Result<u64, GenError> {
 
     let mut program: Vec<Instruction> = Vec::new();
 
-    let mut registers: Vec<u64> = vec![0; 6];numbers_found
+    let mut registers: Vec<u64> = vec![0; 6];
     registers[0] = reg0_initialvalue;
 
     let mut ip_reg = 0;

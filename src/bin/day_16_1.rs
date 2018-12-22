@@ -1,3 +1,6 @@
+#![allow(unused_assignments)]
+#![allow(dead_code)]
+
 extern crate regex;
 
 use std::fs::File;
@@ -7,9 +10,6 @@ use std::io::BufReader;
 use std::mem::transmute;
 
 use Opcode::*;
-
-#[allow(unused_assignments)]
-#[allow(dead_code)]
 
 type GenError = Box<std::error::Error>;
 

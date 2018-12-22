@@ -9,7 +9,7 @@
 
 5      seti 0 2 3              reg3 = 0
 
-6      bori 3 65536 2          reg2 = reg3 | 0xFFFF
+6      bori 3 65536 2          reg2 = reg3 | 0x10000
 7      seti 1397714 1 3        reg3 = 1397714
 
 8      bani 2 255 5            reg5 = reg2 & 0xFF

@@ -1,3 +1,6 @@
+#![allow(unused_assignments)]
+#![allow(dead_code)]
+
 extern crate regex;
 
 use std::fs::File;
