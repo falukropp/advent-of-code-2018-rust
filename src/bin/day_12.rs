@@ -1,5 +1,3 @@
-extern crate regex;
-
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufRead;

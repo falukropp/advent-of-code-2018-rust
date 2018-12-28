@@ -1,5 +1,3 @@
-extern crate regex;
-
 type GenError = Box<std::error::Error>;
 
 fn find_power_level(x: i32, y: i32, grid_serial: i32) -> i32 {

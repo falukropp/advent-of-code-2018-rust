@@ -32,13 +32,16 @@ fn next_matching(instructions: &str) -> Option<(usize, char)> {
     None
 }
 
-fn find_longest(instructions: &str) -> u32 {
-    find_longest_rec(&str, HashSet::new(), 0, 0, 0)
+fn find_longest(instructions: &str) -> (u32, u32) {
+    let mut distant_rooms = 0;
+    let longest = find_longest_rec(&instructions, &mut HashSet::new(), &mut distant_rooms, 0, 0, 0);
+    (longest, distant_rooms)
 }
 
 fn find_longest_rec(
     instructions: &str,
     already_visited: &mut HashSet<(i32, i32)>,
+    distant_rooms: &mut u32,
     start_length: u32,
     start_x: i32,
     start_y: i32,
@@ -46,6 +49,8 @@ fn find_longest_rec(
     let mut longest_sub_detour = 0;
     let mut skip_to_idx = 0;
     let mut current_length = start_length;
+    let mut current_x = start_x;
+    let mut current_y = start_y;
 
     for (i, c) in instructions.char_indices() {
         if i < skip_to_idx {
@@ -53,8 +58,31 @@ fn find_longest_rec(
             continue;
         }
         match c {
-            // TODO: Update x,y, check already visited.
-            'E' | 'N' | 'S' | 'W' => current_length += 1,
+            d @ 'E' | d @ 'N' | d @ 'S' | d @ 'W' => {
+                // println!("Currently at {} {}, going {}", current_x, current_y, d);
+                let mut next_x = current_x;
+                let mut next_y = current_y;
+                match d {
+                    'E' => next_x -= 1,
+                    'N' => next_y -= 1,
+                    'S' => next_y += 1,
+                    'W' => next_x += 1,
+                    _ => panic!("Huh!? {}", d),                 
+                }
+                if already_visited.contains(&(next_x, next_y)) {
+                    // println!("Already been at {} {}!", next_x, next_y);
+                    break;
+                } else {
+                    // println!("Has not been at {} {}!", next_x, next_y);
+                    current_length += 1;
+                    if current_length >= 1000 {
+                        *distant_rooms += 1;
+                    }
+                    already_visited.insert((next_x, next_y));
+                    current_x = next_x;
+                    current_y = next_y;
+                }
+            }
             '(' => {
                 let mut branch_idx_start = i + 1;
                 // println!("parenthesis {} ", &instructions[branch_idx_start..]);
@@ -69,6 +97,7 @@ fn find_longest_rec(
                     longest_sub_detour = longest_sub_detour.max(find_longest_rec(
                         &instructions[branch_idx_start..end_of_branch],
                         already_visited,
+                        distant_rooms,
                         current_length,
                         current_x,
                         current_y,
@@ -90,7 +119,7 @@ fn find_longest_rec(
     current_length.max(longest_sub_detour)
 }
 
-fn process_file(path: &str) -> Result<u32, GenError> {
+fn process_file(path: &str) -> Result<(u32,u32), GenError> {
     let mut f = File::open(path)?;
     let mut s = String::new();
     f.read_to_string(&mut s)?;
@@ -98,22 +127,21 @@ fn process_file(path: &str) -> Result<u32, GenError> {
 }
 
 fn main() {
-    assert_eq!(3, find_longest("^WNE$"));
-    assert_eq!(8, find_longest("^N(EWSNEWS)$"));
-    assert_eq!(8, find_longest("^N(E|EWSNEWS)$"));
-    assert_eq!(12, find_longest("^N(E|EWS(N|NEEEWWWW|EWS)$"));
+    assert_eq!((3,0), find_longest("^WNE$"));
+    assert_eq!((8,0), find_longest("^N(EENNEEN)$"));
+    assert_eq!((8,0), find_longest("^N(E|WWNNWWN)$"));
 
     // println!("{:?}", next_matching("a(b)c)dd", ')'));
 
     // println!("longest_distance", process_file("src/res/day_20_ex_1.txt", 0).unwrap());
 
-    assert_eq!(10, process_file("src/res/day_20_ex_1.txt").unwrap());
-    assert_eq!(18, process_file("src/res/day_20_ex_2.txt").unwrap());
-    assert_eq!(23, process_file("src/res/day_20_ex_3.txt").unwrap());
-    assert_eq!(31, process_file("src/res/day_20_ex_4.txt").unwrap());
+    assert_eq!((10,0), process_file("src/res/day_20_ex_1.txt").unwrap());
+    assert_eq!((18,0), process_file("src/res/day_20_ex_2.txt").unwrap());
+    assert_eq!((23,0), process_file("src/res/day_20_ex_3.txt").unwrap());
+    assert_eq!((31,0), process_file("src/res/day_20_ex_4.txt").unwrap());
 
     println!(
-        "longest_distance {}",
+        "longest_distance {:?}",
         process_file("src/res/day_20.txt").unwrap()
-    );
+    ); // (3806, 8354)
 }
