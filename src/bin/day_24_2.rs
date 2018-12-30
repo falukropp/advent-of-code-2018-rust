@@ -286,5 +286,5 @@ fn main() {
     // println!("{:?}", groups_ex);
 
     let mut groups = read_groups_from_file("src/res/day_24.txt").unwrap();
-    println!("{:?}", find_minimum_boost(&groups)); // 15493
+    println!("{:?}", find_minimum_boost(&groups)); // 1045
 }
