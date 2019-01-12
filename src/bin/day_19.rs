@@ -41,7 +41,7 @@ impl FromStr for Opcode {
     type Err = Error;
 
     fn from_str(opcode: &str) -> Result<Self, Self::Err> {
-        return match opcode {
+        match opcode {
             "addi" => Ok(Addi),
             "addr" => Ok(Addr),
             "mulr" => Ok(Mulr),
@@ -60,7 +60,7 @@ impl FromStr for Opcode {
             "eqrr" => Ok(Eqrr),
 
             _ => Err(Error::Whatever),
-        };
+        }
     }
 }
 
@@ -85,43 +85,55 @@ impl Instruction {
             Bori => reg[self.a as usize] | self.b,
             Setr => reg[self.a as usize],
             Seti => self.a,
-            Gtir => if self.a > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtir => {
+                if self.a > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
 
-            Gtri => if reg[self.a as usize] > self.b {
-                1
-            } else {
-                0
-            },
-            Gtrr => if reg[self.a as usize] > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqir => if self.a == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqri => if reg[self.a as usize] == self.b {
-                1
-            } else {
-                0
-            },
-            Eqrr => if reg[self.a as usize] == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtri => {
+                if reg[self.a as usize] > self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Gtrr => {
+                if reg[self.a as usize] > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqir => {
+                if self.a == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqri => {
+                if reg[self.a as usize] == self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqrr => {
+                if reg[self.a as usize] == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
         }
     }
 }
 
 fn get_instruction(s: &str) -> Instruction {
-    let raw_instruction_data: Vec<&str> = s.split(" ").collect();
+    let raw_instruction_data: Vec<&str> = s.split(' ').collect();
     Instruction {
         op_code: Opcode::from_str(raw_instruction_data[0]).unwrap(),
         a: raw_instruction_data[1].trim().parse().unwrap(),
@@ -164,6 +176,16 @@ fn process_file(path: &str, reg0_initialvalue: u32) -> Result<u32, GenError> {
     }
 
     Ok(registers[0])
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_19() {
+        assert_eq!(1922, process_file("src/res/day_19.txt", 0).unwrap());
+    }
 }
 
 fn main() {

@@ -31,6 +31,21 @@ fn find_score(num_recipies: usize) -> String {
         .collect()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_14_1() {
+        assert_eq!("0124515891", find_score(5));
+        assert_eq!("5158916779", find_score(9));
+        assert_eq!("9251071085", find_score(18));
+        assert_eq!("5941429882", find_score(2018));
+
+        assert_eq!("2810862211", find_score(509671));
+    }
+}
+
 fn main() {
     // let collision_at = process_file("src/res/day_13_ex.txt").unwrap(); // (7,3)
     assert_eq!("0124515891", find_score(5));
@@ -38,5 +53,5 @@ fn main() {
     assert_eq!("9251071085", find_score(18));
     assert_eq!("5941429882", find_score(2018));
 
-    println!("{}", find_score(509671));
+    println!("{}", find_score(509_671));
 }

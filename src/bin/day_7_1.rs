@@ -24,15 +24,15 @@ fn process_file(path: &str) -> Result<String, GenError> {
 
     r.lines().map(|l| l.unwrap()).for_each(|line| {
         for cap in re.captures_iter(&line) {
-            let parent = *&cap[1].chars().nth(0).unwrap();
-            let child = *&cap[2].chars().nth(0).unwrap();
+            let parent = cap[1].chars().nth(0).unwrap();
+            let child = cap[2].chars().nth(0).unwrap();
 
             encountered_in_parent.insert(parent);
             encountered_in_child.insert(child);
 
             // Add to multimaps (both childrens and parents).
-            children.entry(parent).or_insert(Vec::new()).push(child);
-            parents.entry(child).or_insert(Vec::new()).push(parent);
+            children.entry(parent).or_insert_with(Vec::new).push(child);
+            parents.entry(child).or_insert_with(Vec::new).push(parent);
         }
     });
 
@@ -76,6 +76,23 @@ fn process_file(path: &str) -> Result<String, GenError> {
     }
 
     Ok(solution)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_7_1() {
+        assert_eq!(
+            "CABDFE".to_owned(),
+            process_file("src/res/day_7_ex.txt").unwrap()
+        );
+        assert_eq!(
+            "JKNSTHCBGRVDXWAYFOQLMPZIUE".to_owned(),
+            process_file("src/res/day_7.txt").unwrap()
+        );
+    }
 }
 
 fn main() {

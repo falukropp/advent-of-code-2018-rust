@@ -38,6 +38,31 @@ fn sum_of_metadata(nums: &[u32]) -> (u32, usize) {
     (sum, end)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sum_of_metadata_from_file(path: &str) -> (u32, usize) {
+        let string = read_string_from_file(path).unwrap(); // 25737
+
+        let numbers: Vec<u32> = string
+            .split_whitespace()
+            .map(|s| s.parse().unwrap())
+            .collect();
+
+        sum_of_metadata(&numbers)
+    }
+
+    #[test]
+    fn test_day_8_1() {
+        assert_eq!((138, 16), sum_of_metadata_from_file("src/res/day_8_ex.txt"));
+        assert_eq!(
+            (41760, 16175),
+            sum_of_metadata_from_file("src/res/day_8.txt")
+        );
+    }
+}
+
 fn main() {
     // let string = read_string_from_file("src/res/day_8_ex.txt").unwrap(); // Sum = 138
     let string = read_string_from_file("src/res/day_8.txt").unwrap(); //

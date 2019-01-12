@@ -37,8 +37,22 @@ fn find_num_recipes(match_as_string: &str) -> u32 {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_14_2() {
+        assert_eq!(5, find_num_recipes("01245"));
+        assert_eq!(9, find_num_recipes("51589"));
+        assert_eq!(18, find_num_recipes("92510"));
+        assert_eq!(2018, find_num_recipes("59414"));
+
+        assert_eq!(20227889, find_num_recipes("509671"));
+    }
+}
+
 fn main() {
-    // let collision_at = process_file("src/res/day_13_ex.txt").unwrap(); // (7,3)
     assert_eq!(5, find_num_recipes("01245"));
     assert_eq!(9, find_num_recipes("51589"));
     assert_eq!(18, find_num_recipes("92510"));

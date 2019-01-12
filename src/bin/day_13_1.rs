@@ -161,6 +161,17 @@ fn process_file(path: &str) -> Result<(i32, i32), GenError> {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_13_1() {
+        assert_eq!((7, 3), process_file("src/res/day_13_ex.txt").unwrap());
+        assert_eq!((43, 91), process_file("src/res/day_13.txt").unwrap());
+    }
+}
+
 fn main() {
     // let collision_at = process_file("src/res/day_13_ex.txt").unwrap(); // (7,3)
     let collision_at = process_file("src/res/day_13.txt").unwrap(); // (43,91)

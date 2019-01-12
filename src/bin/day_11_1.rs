@@ -41,6 +41,18 @@ fn find_max_kernel(grid_serial: i32, width: i32, height: i32) -> Result<(i32, i3
     Ok(largest_pair)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_11_1() {
+        assert_eq!((33, 45), find_max_kernel(18, 300, 300).unwrap());
+        assert_eq!((21, 61), find_max_kernel(42, 300, 300).unwrap());
+        assert_eq!((34, 72), find_max_kernel(7400, 300, 300).unwrap());
+    }
+}
+
 fn main() {
     println!("Max coords {:?}", find_max_kernel(18, 300, 300).unwrap()); // (33,45)
     println!("Max coords {:?}", find_max_kernel(42, 300, 300).unwrap()); // (21,61)

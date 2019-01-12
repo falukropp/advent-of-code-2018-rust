@@ -92,21 +92,27 @@ fn find_shortest_route(depth: u32, target_x: usize, target_y: usize) -> u32 {
 
         // Change gear
         let other_gear = match cave[current_node.y][current_node.x] {
-            '.' => if current_node.gear == 1 {
-                2
-            } else {
-                1
-            },
-            '=' => if current_node.gear == 0 {
-                2
-            } else {
-                0
-            },
-            '|' => if current_node.gear == 0 {
-                1
-            } else {
-                0
-            },
+            '.' => {
+                if current_node.gear == 1 {
+                    2
+                } else {
+                    1
+                }
+            }
+            '=' => {
+                if current_node.gear == 0 {
+                    2
+                } else {
+                    0
+                }
+            }
+            '|' => {
+                if current_node.gear == 0 {
+                    1
+                } else {
+                    0
+                }
+            }
             t => panic!("Stange cave tile found '{}'", t),
         };
 
@@ -137,15 +143,21 @@ fn find_shortest_route(depth: u32, target_x: usize, target_y: usize) -> u32 {
 
             // Right tool for the next tile?
             match cave[next_y][next_x] {
-                '.' => if current_node.gear == 0 {
-                    continue;
-                },
-                '=' => if current_node.gear == 1 {
-                    continue;
-                },
-                '|' => if current_node.gear == 2 {
-                    continue;
-                },
+                '.' => {
+                    if current_node.gear == 0 {
+                        continue;
+                    }
+                }
+                '=' => {
+                    if current_node.gear == 1 {
+                        continue;
+                    }
+                }
+                '|' => {
+                    if current_node.gear == 2 {
+                        continue;
+                    }
+                }
                 t => panic!("Stange cave tile found '{}'", t),
             }
 
@@ -162,6 +174,18 @@ fn find_shortest_route(depth: u32, target_x: usize, target_y: usize) -> u32 {
     }
 
     12345678 // Should never happen.
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_22_2() {
+        assert_eq!(45, find_shortest_route(510, 10, 10));
+
+        assert_eq!(1089, find_shortest_route(11991, 6, 797));
+    }
 }
 
 fn main() {

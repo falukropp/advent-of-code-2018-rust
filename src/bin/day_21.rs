@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -84,37 +83,49 @@ impl Instruction {
             Bori => reg[self.a as usize] | self.b,
             Setr => reg[self.a as usize],
             Seti => self.a,
-            Gtir => if self.a > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtir => {
+                if self.a > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
 
-            Gtri => if reg[self.a as usize] > self.b {
-                1
-            } else {
-                0
-            },
-            Gtrr => if reg[self.a as usize] > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqir => if self.a == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqri => if reg[self.a as usize] == self.b {
-                1
-            } else {
-                0
-            },
-            Eqrr => if reg[self.a as usize] == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtri => {
+                if reg[self.a as usize] > self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Gtrr => {
+                if reg[self.a as usize] > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqir => {
+                if self.a == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqri => {
+                if reg[self.a as usize] == self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqrr => {
+                if reg[self.a as usize] == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
         }
     }
 }
@@ -155,26 +166,10 @@ fn process_file(path: &str, reg0_initialvalue: u64) -> Result<u64, GenError> {
     // Run program
     let len = program.len();
 
-    // let mut already_encountred = HashSet::new();
-
-    let mut dumped_values = 0;
-
     while (registers[ip_reg] as usize) < len {
         // For part one, just dump whatever the reg3 is and then quit.
         if registers[ip_reg] == 28 {
-            //     // println!("registers {:?}", registers);
-            //     // if !already_encountred.insert(registers[3]) {
-            //     //     println!("Loop!!!!");
-            //     // }
-            //     // if already_encountred.len() % 100 == 0 {
-            //     //     println!("{}", already_encountred.len());
-            //     // }
-            //     // return Ok(0);
-            println!("registers {:?}", registers);
-            dumped_values += 1;
-            if (dumped_values >= 100) {
-                return Ok(0);
-            }
+            return Ok(registers[3]);
         }
         program[registers[ip_reg] as usize].execute(&mut registers);
         registers[ip_reg] += 1;
@@ -183,6 +178,16 @@ fn process_file(path: &str, reg0_initialvalue: u64) -> Result<u64, GenError> {
     Ok(registers[0])
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_21() {
+        assert_eq!(3909249, process_file("src/res/day_21.txt", 0).unwrap());
+    }
+}
+
 fn main() {
-    println!("reg[0] {}", process_file("src/res/day_21.txt", 0).unwrap());
+    println!("reg[3] {}", process_file("src/res/day_21.txt", 0).unwrap());
 }

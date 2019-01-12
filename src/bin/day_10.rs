@@ -33,10 +33,10 @@ fn process_file(path: &str) -> Result<u32, GenError> {
         let line = line_result?;
 
         for cap in re.captures_iter(&line) {
-            let x = *&cap[1].parse::<i32>().unwrap();
-            let y = *&cap[2].parse::<i32>().unwrap();
-            let dx = *&cap[3].parse::<i32>().unwrap();
-            let dy = *&cap[4].parse::<i32>().unwrap();
+            let x = cap[1].parse::<i32>().unwrap();
+            let y = cap[2].parse::<i32>().unwrap();
+            let dx = cap[3].parse::<i32>().unwrap();
+            let dy = cap[4].parse::<i32>().unwrap();
 
             min_x = min_x.min(x);
             max_x = max_x.max(x);
@@ -71,18 +71,18 @@ fn process_file(path: &str) -> Result<u32, GenError> {
         let height = max_y - min_y;
 
         last_area = area;
-        area = (width as i64) * (height as i64);
+        area = i64::from(width) * i64::from(height);
 
-        if height <= 9 {
-            let mut starfield = vec![vec![' '; (width + 1) as usize]; (height + 1) as usize];
+        // if height <= 9 {
+        //     let mut starfield = vec![vec![' '; (width + 1) as usize]; (height + 1) as usize];
 
-            for star in &stars {
-                starfield[(star.y - min_y) as usize][(star.x - min_x) as usize] = 'X';
-            }
-            for row in &starfield {
-                println!("{:?}", row);
-            }
-        }
+        //     for star in &stars {
+        //         starfield[(star.y - min_y) as usize][(star.x - min_x) as usize] = 'X';
+        //     }
+        //     for row in &starfield {
+        //         println!("{:?}", row);
+        //     }
+        // }
         seconds += 1;
 
         // println!(
@@ -94,9 +94,20 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     Ok(seconds - 1)
 }
 
-fn main() {
-    // let sum = process_file("src/res/day_10_ex.txt").unwrap(); // "HI", 3 seconds
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let sum = process_file("src/res/day_10.txt").unwrap(); // "EJXNCCNX", 10612 seconds
-    println!("Seconds {}", sum);
+    #[test]
+    fn test_day_10() {
+        assert_eq!(3, process_file("src/res/day_10_ex.txt").unwrap());
+        assert_eq!(10612, process_file("src/res/day_10.txt").unwrap());
+    }
+}
+
+fn main() {
+    // let minimum = process_file("src/res/day_10_ex.txt").unwrap(); // "HI", 3 seconds
+
+    let minimum = process_file("src/res/day_10.txt").unwrap(); // "EJXNCCNX", 10612 seconds
+    println!("Seconds {}", minimum);
 }

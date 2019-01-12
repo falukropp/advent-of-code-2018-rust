@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate log;
+
+use log::Level::Debug;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufRead;
@@ -19,14 +23,14 @@ fn process_file(path: &str, generations: u32) -> Result<i32, GenError> {
 
     r.lines().map(|l| l.unwrap()).for_each(|line| {
         let rule_parts: Vec<&str> = line.split(" => ").collect();
-        if rule_parts.len() == 2 {
-            if rule_parts[1] == "#" {
-                positive_patterns.insert(rule_parts[0].to_string());
-            }
+        if rule_parts.len() == 2 && rule_parts[1] == "#" {
+            positive_patterns.insert(rule_parts[0].to_string());
         }
     });
 
-    println!("0 0 {}", current_state);
+    if log_enabled!(Debug) {
+        println!("0 0 {}", current_state);
+    }
 
     let mut first_position = 0i32;
 
@@ -72,19 +76,36 @@ fn process_file(path: &str, generations: u32) -> Result<i32, GenError> {
             }
         }
 
-        // println!("{} {} {}", gen, first_position, current_state);
-        println!("{} {} ", gen, result);
+        if log_enabled!(Debug) {
+            println!("{} {} {}", gen, first_position, current_state);
+            println!("{} {} ", gen, result);
+        }
     }
 
     Ok(result)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_12() {
+        assert_eq!(3059, process_file("src/res/day_12.txt", 20).unwrap());
+        assert_eq!(16376, process_file("src/res/day_12.txt", 200).unwrap());
+    }
+}
+
 fn main() {
+    env_logger::init();
+
     // let sum = process_file("src/res/day_12_ex.txt",20).unwrap(); // 325
-    let sum = process_file("src/res/day_12.txt", 20).unwrap(); // 3059
-    let sum = process_file("src/res/day_12.txt", 200).unwrap(); // 16376
+    println!("Result {}", process_file("src/res/day_12.txt", 20).unwrap()); // 3059
+    println!(
+        "Result {}",
+        process_file("src/res/day_12.txt", 200).unwrap()
+    ); // 16376
 
     // Seems to just be adding 73 to each number from now on?
     // So (50000000000-200)*73+16376 = 3650000001776
-    println!("Result {}", sum);
 }

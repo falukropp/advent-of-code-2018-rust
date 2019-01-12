@@ -29,11 +29,11 @@ fn sum_file(path: &str) -> Result<u32, std::io::Error> {
         let line = line_result?;
 
         for cap in re.captures_iter(&line) {
-            let id = *&cap[1].parse::<u32>().unwrap();
-            let top = *&cap[2].parse::<usize>().unwrap();
-            let left = *&cap[3].parse::<usize>().unwrap();
-            let bottom = top + &cap[4].parse::<usize>().unwrap();
-            let right = left + &cap[5].parse::<usize>().unwrap();
+            let id = cap[1].parse::<u32>().unwrap();
+            let top = cap[2].parse::<usize>().unwrap();
+            let left = cap[3].parse::<usize>().unwrap();
+            let bottom = top + cap[4].parse::<usize>().unwrap();
+            let right = left + cap[5].parse::<usize>().unwrap();
 
             max_height = max_height.max(bottom);
             max_width = max_width.max(right);
@@ -86,7 +86,17 @@ fn sum_file(path: &str) -> Result<u32, std::io::Error> {
     //     println!("");
     // }
 
-    return Ok(*uncovered_slabs.iter().next().unwrap());
+    Ok(*uncovered_slabs.iter().next().unwrap())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_3_2() {
+        assert_eq!(775, sum_file("src/res/day_3.txt").unwrap());
+    }
 }
 
 fn main() {

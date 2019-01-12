@@ -92,6 +92,27 @@ fn find_max_kernel(
     Ok(result)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_11_2() {
+        assert_eq!(
+            (90, 269, 16, 113),
+            find_max_kernel(18, 300, 300, 300).unwrap()
+        );
+        assert_eq!(
+            (232, 251, 12, 119),
+            find_max_kernel(42, 300, 300, 300).unwrap()
+        );
+        assert_eq!(
+            (233, 187, 13, 91),
+            find_max_kernel(7400, 300, 300, 300).unwrap()
+        );
+    }
+}
+
 fn main() {
     println!(
         "Max coords {:?}",

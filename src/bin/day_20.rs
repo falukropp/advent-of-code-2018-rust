@@ -34,7 +34,14 @@ fn next_matching(instructions: &str) -> Option<(usize, char)> {
 
 fn find_longest(instructions: &str) -> (u32, u32) {
     let mut distant_rooms = 0;
-    let longest = find_longest_rec(&instructions, &mut HashSet::new(), &mut distant_rooms, 0, 0, 0);
+    let longest = find_longest_rec(
+        &instructions,
+        &mut HashSet::new(),
+        &mut distant_rooms,
+        0,
+        0,
+        0,
+    );
     (longest, distant_rooms)
 }
 
@@ -67,7 +74,7 @@ fn find_longest_rec(
                     'N' => next_y -= 1,
                     'S' => next_y += 1,
                     'W' => next_x += 1,
-                    _ => panic!("Huh!? {}", d),                 
+                    _ => panic!("Huh!? {}", d),
                 }
                 if already_visited.contains(&(next_x, next_y)) {
                     // println!("Already been at {} {}!", next_x, next_y);
@@ -119,27 +126,37 @@ fn find_longest_rec(
     current_length.max(longest_sub_detour)
 }
 
-fn process_file(path: &str) -> Result<(u32,u32), GenError> {
+fn process_file(path: &str) -> Result<(u32, u32), GenError> {
     let mut f = File::open(path)?;
     let mut s = String::new();
     f.read_to_string(&mut s)?;
     Ok(find_longest(&s))
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_20() {
+        assert_eq!((3, 0), find_longest("^WNE$"));
+        assert_eq!((8, 0), find_longest("^N(EENNEEN)$"));
+        assert_eq!((8, 0), find_longest("^N(E|WWNNWWN)$"));
+
+        // println!("{:?}", next_matching("a(b)c)dd", ')'));
+
+        // println!("longest_distance", process_file("src/res/day_20_ex_1.txt", 0).unwrap());
+
+        assert_eq!((10, 0), process_file("src/res/day_20_ex_1.txt").unwrap());
+        assert_eq!((18, 0), process_file("src/res/day_20_ex_2.txt").unwrap());
+        assert_eq!((23, 0), process_file("src/res/day_20_ex_3.txt").unwrap());
+        assert_eq!((31, 0), process_file("src/res/day_20_ex_4.txt").unwrap());
+
+        assert_eq!((3806, 8354), process_file("src/res/day_20.txt").unwrap());
+    }
+}
+
 fn main() {
-    assert_eq!((3,0), find_longest("^WNE$"));
-    assert_eq!((8,0), find_longest("^N(EENNEEN)$"));
-    assert_eq!((8,0), find_longest("^N(E|WWNNWWN)$"));
-
-    // println!("{:?}", next_matching("a(b)c)dd", ')'));
-
-    // println!("longest_distance", process_file("src/res/day_20_ex_1.txt", 0).unwrap());
-
-    assert_eq!((10,0), process_file("src/res/day_20_ex_1.txt").unwrap());
-    assert_eq!((18,0), process_file("src/res/day_20_ex_2.txt").unwrap());
-    assert_eq!((23,0), process_file("src/res/day_20_ex_3.txt").unwrap());
-    assert_eq!((31,0), process_file("src/res/day_20_ex_4.txt").unwrap());
-
     println!(
         "longest_distance {:?}",
         process_file("src/res/day_20.txt").unwrap()

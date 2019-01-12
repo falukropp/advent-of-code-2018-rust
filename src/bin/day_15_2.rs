@@ -42,7 +42,7 @@ fn process_file(path: &str) -> Result<i32, GenError> {
                     y: row,
                     x: idx,
                     hit_points: 200,
-                    being_type: being_type,
+                    being_type,
                 });
             });
         row += 1;
@@ -104,7 +104,7 @@ fn do_battle(
             let mut least_enemy_move_coords: Option<(usize, usize)> = None;
 
             {
-                let ref being = beings[idx];
+                let being = &beings[idx];
                 // If killed... continue
                 if being.hit_points <= 0 {
                     continue;
@@ -154,7 +154,7 @@ fn do_battle(
             // println!("idx {} move {:?}", idx, least_enemy_move_coords);
 
             if let Some(c) = least_enemy_move_coords {
-                let ref mut being = beings[idx];
+                let being = &mut beings[idx];
                 cave[being.y][being.x] = '.';
                 being.x = c.0;
                 being.y = c.1;
@@ -210,13 +210,13 @@ fn do_battle(
     }
 }
 
-fn find_being_at(beings: &Vec<Being>, x: usize, y: usize) -> Option<&Being> {
+fn find_being_at(beings: &[Being], x: usize, y: usize) -> Option<&Being> {
     for being in beings {
         if being.x == x && being.y == y && being.hit_points > 0 {
             return Some(being);
         }
     }
-    return None;
+    None
 }
 
 fn find_being_at_mut(beings: &mut Vec<Being>, x: usize, y: usize) -> Option<&mut Being> {
@@ -225,10 +225,10 @@ fn find_being_at_mut(beings: &mut Vec<Being>, x: usize, y: usize) -> Option<&mut
             return Some(being);
         }
     }
-    return None;
+    None
 }
 
-fn find_enemy_within_range(enemies: &Vec<Being>, x: usize, y: usize) -> Option<(usize, usize)> {
+fn find_enemy_within_range(enemies: &[Being], x: usize, y: usize) -> Option<(usize, usize)> {
     let mut least_enemy_attack_coords = None;
     let mut least_enemy_hp = std::i32::MAX;
     if let Some(enemy) = find_being_at(enemies, x, y - 1) {
@@ -257,7 +257,7 @@ fn find_enemy_within_range(enemies: &Vec<Being>, x: usize, y: usize) -> Option<(
         }
     }
 
-    return least_enemy_attack_coords;
+    least_enemy_attack_coords
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -270,8 +270,8 @@ struct SearchNode {
 }
 
 fn find_first_step_in_path_to_target(
-    cave: &Vec<Vec<char>>,
-    enemies: &Vec<Being>,
+    cave: &[Vec<char>],
+    enemies: &[Being],
     start_x: usize,
     start_y: usize,
 ) -> Option<(usize, usize)> {
@@ -349,8 +349,26 @@ fn find_first_step_in_path_to_target(
     Some((target.first_x, target.first_y))
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_15_2() {
+        assert_eq!(1328, process_file("src/res/day_15_ex_1.txt").unwrap());
+        assert_eq!(4988, process_file("src/res/day_15_ex_2.txt").unwrap()); // 15 power
+        assert_eq!(31284, process_file("src/res/day_15_ex_4.txt").unwrap());
+
+        assert_eq!(3478, process_file("src/res/day_15_ex_5.txt").unwrap());
+        assert_eq!(6474, process_file("src/res/day_15_ex_6.txt").unwrap());
+        assert_eq!(1140, process_file("src/res/day_15_ex_7.txt").unwrap());
+
+        assert_eq!(49863, process_file("src/res/day_15.txt").unwrap());
+    }
+}
+
 fn main() {
-    // assert_eq!(27828, process_file("src/res/day_15_ex_1.txt").unwrap());
+    // assert_eq!(1328, process_file("src/res/day_15_ex_1.txt").unwrap());
     assert_eq!(4988, process_file("src/res/day_15_ex_2.txt").unwrap()); // 15 power
     assert_eq!(31284, process_file("src/res/day_15_ex_4.txt").unwrap());
 

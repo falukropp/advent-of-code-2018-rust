@@ -11,7 +11,17 @@ fn sum_file(path: &str) -> Result<i64, std::io::Error> {
         sum += line.parse::<i64>().unwrap();
     }
 
-    return Ok(sum);
+    Ok(sum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_1_1() {
+        assert_eq!(433, sum_file("src/res/day_1_1.txt").unwrap());
+    }
 }
 
 fn main() {

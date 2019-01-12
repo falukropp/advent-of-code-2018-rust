@@ -94,14 +94,31 @@ fn process_file(path: &str, workers: usize, cost: u32) -> Result<(String, u32), 
                 break;
             }
         }
-        println!(
-            "second {}  {:?} {:?} {:?}",
-            second, worker_work, worker_done, solvable
-        );
+        // println!(
+        //     "second {}  {:?} {:?} {:?}",
+        //     second, worker_work, worker_done, solvable
+        // );
         second += 1;
     }
 
     Ok((solution, second - 1))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_7_2() {
+        assert_eq!(
+            ("CABFDE".to_owned(), 15),
+            process_file("src/res/day_7_ex.txt", 2, 0).unwrap()
+        );
+        assert_eq!(
+            ("JNSVKDYTXHRCGBOWAFQLMPZIUE".to_owned(), 755),
+            process_file("src/res/day_7.txt", 5, 60).unwrap()
+        );
+    }
 }
 
 fn main() {

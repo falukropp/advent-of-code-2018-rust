@@ -62,37 +62,49 @@ impl Instruction {
             Bori => reg[self.a as usize] | self.b,
             Setr => reg[self.a as usize],
             Seti => self.a,
-            Gtir => if self.a > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtir => {
+                if self.a > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
 
-            Gtri => if reg[self.a as usize] > self.b {
-                1
-            } else {
-                0
-            },
-            Gtrr => if reg[self.a as usize] > reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqir => if self.a == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
-            Eqri => if reg[self.a as usize] == self.b {
-                1
-            } else {
-                0
-            },
-            Eqrr => if reg[self.a as usize] == reg[self.b as usize] {
-                1
-            } else {
-                0
-            },
+            Gtri => {
+                if reg[self.a as usize] > self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Gtrr => {
+                if reg[self.a as usize] > reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqir => {
+                if self.a == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqri => {
+                if reg[self.a as usize] == self.b {
+                    1
+                } else {
+                    0
+                }
+            }
+            Eqrr => {
+                if reg[self.a as usize] == reg[self.b as usize] {
+                    1
+                } else {
+                    0
+                }
+            }
         }
     }
 }
@@ -129,7 +141,6 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     };
     let mut after: Vec<u32> = Vec::new();
     let mut empty_lines_in_row = 0;
-    let mut raw_op_code_in_instruction = 0;
 
     let mut part_1 = true;
 
@@ -138,7 +149,6 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     for line_result in r.lines() {
         let line = line_result?;
 
-        // println!("Got line {} ", line);
         if line.is_empty() {
             empty_lines_in_row += 1;
             if empty_lines_in_row == 3 {
@@ -149,36 +159,37 @@ fn process_file(path: &str) -> Result<u32, GenError> {
         empty_lines_in_row = 0;
         if line.starts_with("Before: ") {
             before = get_vector(&line);
-        // println!("Got before {:?}", before);
         } else if line.starts_with("After: ") {
             after = get_vector(&line);
-            // println!("Got after {:?}", after);
             let mut matches = 0;
-            let mut last_match = None;
             for raw_op_code in 0..=15 {
                 instruction.op_code = Opcode::from(raw_op_code);
 
                 let mut copy_of_before = before.clone();
                 instruction.execute(&mut copy_of_before);
                 if copy_of_before == after {
-                    // println!("Match for {:?}", instruction.op_code);
                     matches += 1;
-                    last_match = Some(instruction.op_code);
                 }
             }
-            if matches == 1 {
-                // println!("Single match {:?}", last_match.unwrap());
-            } else if matches >= 3 {
+            if matches >= 3 {
                 triple_matches += 1;
             }
         } else if part_1 {
-            // println!("Instruction line {}", line);
             instruction = get_unknown_instruction(&line);
-            // println!("Got instruction {:?}", instruction);
         }
     }
 
     Ok(triple_matches)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_16_1() {
+        assert_eq!(547, process_file("src/res/day_16.txt").unwrap());
+    }
 }
 
 fn main() {

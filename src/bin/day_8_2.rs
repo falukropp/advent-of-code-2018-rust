@@ -17,7 +17,7 @@ fn sum_of_metadata(nums: &[u32]) -> (u32, usize) {
     let children = nums[0];
     let meta_datas = nums[1] as usize;
 
-    println!("children {} metadatas  {}", children, meta_datas);
+    // println!("children {} metadatas  {}", children, meta_datas);
 
     let mut sum = 0;
     let mut pos = 2;
@@ -52,15 +52,36 @@ fn sum_of_metadata(nums: &[u32]) -> (u32, usize) {
     (sum, end)
 }
 
-fn main() {
-    // let string = read_string_from_file("src/res/day_8_ex.txt").unwrap(); // Sum = 66
-
-    let string = read_string_from_file("src/res/day_8.txt").unwrap(); // 25737
+fn sum_of_metadata_from_file(path: &str) -> (u32, usize) {
+    let string = read_string_from_file(path).unwrap(); // 25737
 
     let numbers: Vec<u32> = string
         .split_whitespace()
         .map(|s| s.parse().unwrap())
         .collect();
 
-    println!("Result {:?}", sum_of_metadata(&numbers).0);
+    sum_of_metadata(&numbers)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_8_2() {
+        assert_eq!((66, 16), sum_of_metadata_from_file("src/res/day_8_ex.txt"));
+        assert_eq!(
+            (25737, 16175),
+            sum_of_metadata_from_file("src/res/day_8.txt")
+        );
+    }
+}
+
+fn main() {
+    // let string = read_string_from_file("src/res/day_8_ex.txt").unwrap(); // Sum = 66
+
+    println!(
+        "Result {:?}",
+        sum_of_metadata_from_file("src/res/day_8.txt")
+    );
 }

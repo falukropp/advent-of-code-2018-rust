@@ -108,7 +108,7 @@ fn find_closest_with_most_overlap(nanobots: &Vec<Nanobot>) -> i64 {
     let z1 = nanobots.iter().min_by_key(|n| n.z).unwrap().z;
     let z2 = nanobots.iter().max_by_key(|n| n.z).unwrap().z;
 
-    println!("{} {} {} {} {} {}", x1, x2, y1, y2, z1, z2);
+    println!("World corners {} {} {} {} {} {}", x1, x2, y1, y2, z1, z2);
 
     let max_diff = (x2 - x1).max(y2 - y1).max(z2 - z1);
 
@@ -148,7 +148,7 @@ fn find_closest_with_most_overlap(nanobots: &Vec<Nanobot>) -> i64 {
             (sdiv.x1 + s, sdiv.y1 + s, sdiv.z1),
             (sdiv.x1 + s, sdiv.y1 + s, sdiv.z1 + s),
         ]
-            .iter()
+        .iter()
         {
             let x1 = start_point.0;
             let y1 = start_point.1;
@@ -181,10 +181,24 @@ fn find_closest_with_most_overlap(nanobots: &Vec<Nanobot>) -> i64 {
     // 0
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_23_2() {
+        let nanobots_ex = read_nanobots_from_file("src/res/day_23_ex_2.txt").unwrap();
+        assert_eq!(36, find_closest_with_most_overlap(&nanobots_ex));
+
+        let nanobots = read_nanobots_from_file("src/res/day_23.txt").unwrap();
+        assert_eq!(110620102, find_closest_with_most_overlap(&nanobots));
+    }
+}
+
 fn main() {
-    let nanobots_ex = read_nanobots_from_file("src/res/day_23_ex_3.txt").unwrap();
-    println!("{}", find_closest_with_most_overlap(&nanobots_ex)); // 36
+    let nanobots_ex = read_nanobots_from_file("src/res/day_23_ex_2.txt").unwrap();
+    println!("{}", find_closest_with_most_overlap(&nanobots_ex));
 
     let nanobots = read_nanobots_from_file("src/res/day_23.txt").unwrap();
-    println!("{}", find_closest_with_most_overlap(&nanobots)); // 110620102
+    println!("{}", find_closest_with_most_overlap(&nanobots));
 }

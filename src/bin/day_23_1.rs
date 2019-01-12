@@ -67,6 +67,20 @@ fn find_largets_nanobots_neighbours(nanobots: &Vec<Nanobot>) -> u32 {
         .count() as u32
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_23_1() {
+        let nanobots_ex = read_nanobots_from_file("src/res/day_23_ex.txt").unwrap();
+        assert_eq!(7, find_largets_nanobots_neighbours(&nanobots_ex));
+
+        let nanobots = read_nanobots_from_file("src/res/day_23.txt").unwrap();
+        assert_eq!(602, find_largets_nanobots_neighbours(&nanobots));
+    }
+}
+
 fn main() {
     let nanobots_ex = read_nanobots_from_file("src/res/day_23_ex.txt").unwrap();
     println!("{}", find_largets_nanobots_neighbours(&nanobots_ex)); // 7

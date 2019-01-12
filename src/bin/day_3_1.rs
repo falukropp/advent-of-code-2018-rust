@@ -27,10 +27,10 @@ fn sum_file(path: &str) -> Result<i64, std::io::Error> {
         let line = line_result?;
 
         for cap in re.captures_iter(&line) {
-            let top = *&cap[2].parse::<usize>().unwrap();
-            let left = *&cap[3].parse::<usize>().unwrap();
-            let bottom = top + &cap[4].parse::<usize>().unwrap();
-            let right = left + &cap[5].parse::<usize>().unwrap();
+            let top = cap[2].parse::<usize>().unwrap();
+            let left = cap[3].parse::<usize>().unwrap();
+            let bottom = top + cap[4].parse::<usize>().unwrap();
+            let right = left + cap[5].parse::<usize>().unwrap();
 
             max_height = max_height.max(bottom);
             max_width = max_width.max(right);
@@ -56,7 +56,7 @@ fn sum_file(path: &str) -> Result<i64, std::io::Error> {
                 state[row][col] = match state[row][col] {
                     ' ' => '.',
                     '.' => {
-                        count = count + 1;
+                        count += 1;
                         'X'
                     }
                     _ => 'X',
@@ -72,7 +72,17 @@ fn sum_file(path: &str) -> Result<i64, std::io::Error> {
     //     println!("");
     // }
 
-    return Ok(count);
+    Ok(count)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_3_1() {
+        assert_eq!(119572, sum_file("src/res/day_3.txt").unwrap());
+    }
 }
 
 fn main() {

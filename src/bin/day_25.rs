@@ -79,8 +79,21 @@ fn count_constellations(path: &str) -> usize {
     constellations.len()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_count_constellations() {
+        assert_eq!(4, count_constellations("src/res/day_25_ex_1.txt"));
+        assert_eq!(3, count_constellations("src/res/day_25_ex_2.txt"));
+        assert_eq!(377, count_constellations("src/res/day_25.txt"));
+    }
+}
+
 fn main() {
-    assert_eq!(4, count_constellations("src/res/day_25_ex_1.txt"));
-    assert_eq!(3, count_constellations("src/res/day_25_ex_2.txt"));
-    assert_eq!(377, count_constellations("src/res/day_25.txt"));
+    println!(
+        "day_25 : number of constellations : {}",
+        count_constellations("src/res/day_25.txt")
+    );
 }

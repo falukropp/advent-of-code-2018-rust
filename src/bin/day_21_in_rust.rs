@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-fn main() {
+fn run_strange_program() -> u64 {
     let reg0 = 0;
 
     let mut numbers_found = HashSet::new();
@@ -22,9 +22,8 @@ fn main() {
                 if reg3 == reg0 {
                     break 'outer;
                 } else {
-                    if (!numbers_found.insert(reg3)) {
-                        println!("Loop found! Last before loop {}", prev_reg_3);
-                        break 'outer;
+                    if !numbers_found.insert(reg3) {
+                        return prev_reg_3;
                     }
                     prev_reg_3 = reg3;
                     if numbers_found.len() % 1000 == 0 {
@@ -47,5 +46,19 @@ fn main() {
         }
     }
 
-    println!("Done");
+    panic!("WTF?");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_21_weird_program() {
+        assert_eq!(12333799, run_strange_program());
+    }
+}
+
+fn main() {
+    println!("{}", run_strange_program());
 }

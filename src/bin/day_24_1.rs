@@ -72,13 +72,13 @@ fn read_groups_from_file(path: &str) -> Result<Vec<Group>, GenError> {
                     infection_idx += 1;
                     infection_idx - 1
                 },
-                size: *&cap["size"].parse().unwrap(),
-                hit_points: *&cap["hit_points"].parse().unwrap(),
-                attack_power: *&cap["attack_power"].parse().unwrap(),
+                size: cap["size"].parse().unwrap(),
+                hit_points: cap["hit_points"].parse().unwrap(),
+                attack_power: cap["attack_power"].parse().unwrap(),
                 weaknesses: if let Some(weaknesses) = cap.name("weaknesses") {
                     weaknesses
                         .as_str()
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_string())
                         .collect()
                 } else {
@@ -87,15 +87,15 @@ fn read_groups_from_file(path: &str) -> Result<Vec<Group>, GenError> {
                 immunities: if let Some(immunities) = cap.name("immunities") {
                     immunities
                         .as_str()
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_string())
                         .collect()
                 } else {
                     Vec::new()
                 },
                 attack_type: cap["attack_type"].to_string(),
-                initiative: *&cap["initiative"].parse().unwrap(),
-                group_type: current_group_type.clone(),
+                initiative: cap["initiative"].parse().unwrap(),
+                group_type: current_group_type,
             };
 
             groups.push(group);
@@ -248,13 +248,23 @@ fn play_game(groups: &mut Vec<Group>) -> i32 {
     groups.iter().map(|g| g.size).sum()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_24_1() {
+        let mut groups_ex = read_groups_from_file("src/res/day_24_ex.txt").unwrap();
+        assert_eq!(5216, play_game(&mut groups_ex));
+        let mut groups = read_groups_from_file("src/res/day_24.txt").unwrap();
+        assert_eq!(15493, play_game(&mut groups));
+    }
+}
+
 fn main() {
     // let mut groups_ex = read_groups_from_file("src/res/day_24_ex.txt").unwrap();
     // println!("{}", play_game(&mut groups_ex));
 
-    // let groups_ex = read_groups_from_file("src/res/day_24_ex_2.txt").unwrap();
-    // println!("{:?}", groups_ex);
-
     let mut groups = read_groups_from_file("src/res/day_24.txt").unwrap();
-    println!("{}", play_game(&mut groups)); // 15493
+    println!("{}", play_game(&mut groups));
 }

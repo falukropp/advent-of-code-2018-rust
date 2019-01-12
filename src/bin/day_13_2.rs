@@ -107,10 +107,6 @@ fn process_file(path: &str) -> Result<(i32, i32), GenError> {
         }
         tracks.push(cleaned_line);
     });
-    // for row in tracks {
-    //     println!("{}", row);
-    // }
-    // println!("{:?}", minecarts);
 
     let mut positions = HashMap::new();
     for idx in 0..minecarts.len() {
@@ -119,7 +115,6 @@ fn process_file(path: &str) -> Result<(i32, i32), GenError> {
     }
 
     let mut idx_to_be_removed = HashSet::new();
-    let mut tick = 0;
     loop {
         minecarts.sort();
         idx_to_be_removed.clear();
@@ -141,7 +136,6 @@ fn process_file(path: &str) -> Result<(i32, i32), GenError> {
                 idx_to_be_removed.insert(idx);
                 idx_to_be_removed.insert(other_idx);
                 positions.remove(&(minecart.x, minecart.y));
-                println!("{} Collision at {}, {}", tick, minecart.x, minecart.y);
             }
 
             minecart.heading = match tracks[minecart.y as usize][minecart.x as usize] {
@@ -182,15 +176,22 @@ fn process_file(path: &str) -> Result<(i32, i32), GenError> {
             let surviving_minecart = &minecarts.iter().next().unwrap();
             return Ok((surviving_minecart.x, surviving_minecart.y));
         }
-        tick += 1;
-        println!("{:?}", minecarts);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_13_2() {
+        assert_eq!((6, 4), process_file("src/res/day_13_ex_2.txt").unwrap());
+        assert_eq!((35, 59), process_file("src/res/day_13.txt").unwrap());
     }
 }
 
 fn main() {
-    // let collision_at = process_file("src/res/day_13_ex_2.txt").unwrap(); // (6,4)
-
-    let collision_at = process_file("src/res/day_13.txt").unwrap(); // (115,24)
+    let collision_at = process_file("src/res/day_13.txt").unwrap(); // (35, 59)
 
     println!("Last survivor at {:?}", collision_at);
 }

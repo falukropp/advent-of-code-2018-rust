@@ -72,13 +72,13 @@ fn read_groups_from_file(path: &str) -> Result<Vec<Group>, GenError> {
                     infection_idx += 1;
                     infection_idx - 1
                 },
-                size: *&cap["size"].parse().unwrap(),
-                hit_points: *&cap["hit_points"].parse().unwrap(),
-                attack_power: *&cap["attack_power"].parse().unwrap(),
+                size: cap["size"].parse().unwrap(),
+                hit_points: cap["hit_points"].parse().unwrap(),
+                attack_power: cap["attack_power"].parse().unwrap(),
                 weaknesses: if let Some(weaknesses) = cap.name("weaknesses") {
                     weaknesses
                         .as_str()
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_string())
                         .collect()
                 } else {
@@ -87,15 +87,15 @@ fn read_groups_from_file(path: &str) -> Result<Vec<Group>, GenError> {
                 immunities: if let Some(immunities) = cap.name("immunities") {
                     immunities
                         .as_str()
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_string())
                         .collect()
                 } else {
                     Vec::new()
                 },
                 attack_type: cap["attack_type"].to_string(),
-                initiative: *&cap["initiative"].parse().unwrap(),
-                group_type: current_group_type.clone(),
+                initiative: cap["initiative"].parse().unwrap(),
+                group_type: current_group_type,
             };
 
             groups.push(group);
@@ -134,8 +134,7 @@ fn play_game(groups: &mut Vec<Group>) -> (i32, Option<GroupType>) {
             let source_group = &groups[source_idx];
             let mut max_damage_dealt = 0;
             let mut selected_target_idx = 0;
-            for target_idx in 0..groups.len() {
-                let target_group = &groups[target_idx];
+            for (target_idx, target_group) in groups.iter().enumerate() {
                 if target_group.group_type == source_group.group_type
                     || targetted.contains(&target_idx)
                 {
@@ -247,10 +246,10 @@ fn play_game(groups: &mut Vec<Group>) -> (i32, Option<GroupType>) {
     }
 }
 
-fn find_minimum_boost(orig_groups: &Vec<Group>) -> i32 {
+fn find_minimum_boost(orig_groups: &[Group]) -> i32 {
     let mut boost = 0;
     loop {
-        let mut boosted_groups: Vec<Group> = orig_groups.clone();
+        let mut boosted_groups: Vec<Group> = orig_groups.to_owned();
         for group in &mut boosted_groups {
             if group.group_type == GroupType::Immune {
                 group.attack_power += boost;
@@ -278,13 +277,18 @@ fn find_minimum_boost(orig_groups: &Vec<Group>) -> i32 {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_24_2() {
+        let groups = read_groups_from_file("src/res/day_24.txt").unwrap();
+        assert_eq!(1045, find_minimum_boost(&groups));
+    }
+}
+
 fn main() {
-    // let mut groups_ex = read_groups_from_file("src/res/day_24_ex.txt").unwrap();
-    // println!("{}", play_game(&mut groups_ex));
-
-    // let groups_ex = read_groups_from_file("src/res/day_24_ex_2.txt").unwrap();
-    // println!("{:?}", groups_ex);
-
-    let mut groups = read_groups_from_file("src/res/day_24.txt").unwrap();
-    println!("{:?}", find_minimum_boost(&groups)); // 1045
+    let groups = read_groups_from_file("src/res/day_24.txt").unwrap();
+    println!("day_24_2 : minimum boost {:?}", find_minimum_boost(&groups));
 }

@@ -41,6 +41,24 @@ fn high_score(players: usize, marbles: usize) -> u64 {
     *scores.iter().max().unwrap()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_9() {
+        assert_eq!(8317, high_score(10, 1618));
+        assert_eq!(146373, high_score(13, 7999));
+        assert_eq!(2764, high_score(17, 1104));
+        assert_eq!(54718, high_score(21, 6111));
+        assert_eq!(37305, high_score(30, 5807));
+
+        assert_eq!(398371, high_score(462, 71938));
+
+        assert_eq!(3212830280, high_score(462, 7193800));
+    }
+}
+
 fn main() {
     println!("Result {:?}", high_score(9, 25)); // 32
     println!("Result {:?}", high_score(10, 1618)); // 8317
@@ -53,5 +71,5 @@ fn main() {
     println!("Result {:?}", high_score(462, 71938)); // 398371
 
     // 9_2
-    println!("Result {:?}", high_score(462, 7193800)); // 3212830280
+    println!("Result {:?}", high_score(462, 7_193_800)); // 3212830280
 }

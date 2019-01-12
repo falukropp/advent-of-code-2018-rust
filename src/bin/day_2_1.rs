@@ -22,7 +22,17 @@ fn find_checksum(path: &str) -> Result<i64, std::io::Error> {
             with3 += 1;
         }
     }
-    return Ok(with2 * with3);
+    Ok(with2 * with3)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_2_1() {
+        assert_eq!(6370, find_checksum("src/res/day_2.txt").unwrap());
+    }
 }
 
 fn main() {

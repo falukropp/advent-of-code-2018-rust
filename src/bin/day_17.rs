@@ -1,5 +1,8 @@
+#[macro_use]
+extern crate log;
 extern crate regex;
 
+use log::Level::Debug;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -32,7 +35,7 @@ fn process_file(path: &str) -> Result<(u32, u32), GenError> {
 
         let parts: Vec<&str> = line.split(", ").collect();
         for part in parts {
-            let assignment: Vec<&str> = part.split("=").collect();
+            let assignment: Vec<&str> = part.split('=').collect();
             let range: Vec<usize> = assignment[1]
                 .split("..")
                 .map(|i| i.trim().parse().unwrap())
@@ -62,15 +65,18 @@ fn process_file(path: &str) -> Result<(u32, u32), GenError> {
         }
     }
 
-    // dump_playfield(&world, min_x, max_x);
+    if log_enabled!(Debug) {
+        debug!("Before filling of water");
+        debug!("{}", dump_playfield(&world, min_x, max_x));
+    }
 
     fill_water(&mut world, 500, 0, min_x, max_x);
 
-    println!("--------------------------------------");
-
-    dump_playfield(&world, min_x, max_x);
-
-    println!("({} {}) ({} {})", min_x, max_x, min_y, max_y);
+    if log_enabled!(Debug) {
+        debug!("After filling of water");
+        debug!("{}", dump_playfield(&world, min_x, max_x));
+        debug!("({} {}) ({} {})", min_x, max_x, min_y, max_y);
+    }
 
     let mut water_tiles = 0;
     let mut still_tiles = 0;
@@ -210,22 +216,31 @@ fn fill_water(
     true
 }
 
-fn dump_playfield(world: &Playfield, min_x: usize, max_x: usize) {
-    println!("");
+fn dump_playfield(world: &Playfield, min_x: usize, max_x: usize) -> String {
+    let mut result = String::new();
     for row in world {
         for col in min_x - 1..=max_x + 1 {
-            print!("{}", row[col]);
+            result.push(row[col]);
+            // print!("{}", row[col]);
         }
-        println!("");
+        result.push('\n');
     }
-    println!("");
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_17() {
+        assert_eq!((57, 29), process_file("src/res/day_17_ex.txt").unwrap());
+        assert_eq!((40879, 34693), process_file("src/res/day_17.txt").unwrap());
+    }
 }
 
 fn main() {
-    // println!(
-    //     "water_tiles {:?}",
-    //     process_file("src/res/day_17_ex.txt").unwrap() // (57,29)
-    // );
+    env_logger::init();
 
     println!(
         "water_tiles {:?}",

@@ -71,6 +71,16 @@ fn process_file(path: &str) -> Result<u32, GenError> {
     return Ok(sleepiest_guard * (max_minutes as u32));
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_day_4_1() {
+        assert_eq!(14346, process_file("src/res/day_4.txt").unwrap());
+    }
+}
+
 fn main() {
     let sum = process_file("src/res/day_4.txt").unwrap(); // 14346
     println!("Checksum {}", sum);
